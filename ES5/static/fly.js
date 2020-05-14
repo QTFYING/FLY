@@ -192,7 +192,6 @@
 util.jsonp = function ({url, data}) {
   return new Promise((resolve, reject) => {
     let script = document.createElement('script');
-
     // 接口返回的数据获取
     window.jsonpCb = (res) => {
       document.body.removeChild(script);
@@ -203,13 +202,6 @@ util.jsonp = function ({url, data}) {
     script.src = `${url}?${util.handleData(data)}&cb=jsonpCb`;
     document.body.appendChild(script);
   });
-};
-
-/**
- * html引入js或者json文件，并获取数据
- */
-util.loadFile = function () {
-
 };
 
 })(window.FLY = window.fly || {});

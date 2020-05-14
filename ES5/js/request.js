@@ -3,7 +3,7 @@
 // jsonp使用方法
 let util = window.FLY.T.Util;
 util.jsonp({
-    url: '../../mock/mock.json',
+    url: '../../mock/mock.js',
     data: {
       name: 'qtfying',
       age: 18
