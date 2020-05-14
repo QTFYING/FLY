@@ -184,15 +184,6 @@
   };
 
 /**
- * 动态创建script标签
- */
-util.createScript = function(url) {
-  let script = document.createElement('script');
-  script.src = url;
-  document.body.appendChild(script);
-};
-
-/**
  * 封装一个jsopn用来跨域
  * @param url 请求的地址，为字符串
  * @param data 请求的参数，为对象
@@ -200,13 +191,17 @@ util.createScript = function(url) {
  */
 util.jsonp = function ({url, data}) {
   return new Promise((resolve, reject) => {
-     // 接口返回的数据获取
+    let script = document.createElement('script');
+
+    // 接口返回的数据获取
     window.jsonpCb = (res) => {
       document.body.removeChild(script);
       delete window.jsonpCb;
       resolve(res);
     };
-     util.createScript(`${url}?${util.handleData(data)}&cb=jsonpCb`);
+
+    script.src = `${url}?${util.handleData(data)}&cb=jsonpCb`;
+    document.body.appendChild(script);
   });
 };
 

@@ -3,9 +3,10 @@
 // jsonp使用方法
 let util = window.FLY.T.Util;
 util.jsonp({
-    url: 'http://www.baidu.com/api',
+    url: '../../mock/mock.json',
     data: {
       name: 'qtfying',
       age: 18
     }
-  });
+  }).then(res => console.log(res))
+    .catch(error => console.log('Error:', error));
