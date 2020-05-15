@@ -1,4 +1,4 @@
-/* jshint esversion: 6 */
+/* jshint esversion: 9 */
 (function(FLY) {
   /**
    * fly.js
@@ -85,10 +85,10 @@
 
   /**
    * reducde实现，功能同上
-   * util.handleData({ name:'qtfying', age: 18 }) => "name=qtfying&age=18"
+   * util.formatUrl({ name:'qtfying', age: 18 }) => "name=qtfying&age=18"
    * @returns {{String}}
    */
-  util.handleData = (data) => {
+  util.formatUrl = (data) => {
     const keys = Object.keys(data);
     const keysLen = keys.length;
     return keys.reduce((pre, cur, index) => {
@@ -199,9 +199,52 @@ util.jsonp = function ({url, data}) {
       resolve(res);
     };
 
-    script.src = `${url}?${util.handleData(data)}&cb=jsonpCb`;
+    script.src = `${url}?${util.formatUrl(data)}&cb=jsonpCb`;
     document.body.appendChild(script);
   });
 };
+
+/**
+ * 封装fetch请求
+ * @param url 请求的地址，为字符串
+ * @param data 请求的参数，为对象
+ * @returns {Promise<any>}
+ */
+
+ util.fetchData = function (method, url, param, headers = null) {
+  // 请求头信息
+  let defaultHeaders = {
+    'Content-Type': 'application/json',
+    'Accept-Charset': 'utf-8',
+  };
+
+  let newHeaders = {...defaultHeaders, ...headers};
+
+  return new Promise((resolve, reject) => {
+    fetch(url + (method.toUpperCase() === 'POST' ? '' : `?${util.formatUrl(param)}`), {
+      method: method,
+      body: method.toUpperCase() === 'POST' ? JSON.stringify(param) : null,
+      headers: newHeaders,
+      mode: 'cors', // no-cors, cors, *same-origin
+      redirect: 'follow', // manual, *follow, error
+      referrer: 'no-referrer', // *client, no-referrer
+    }).then(res => {
+        // 如果返回的状态为200，表示正常
+        if(res.status === 200) {
+          return res.json();
+        } else {
+          // 服务器端抛出的错误会在这里捕获
+          reject(res.statusText);
+        }
+      }).then(json => {
+        // 如果返回 code=-1，则表示错误
+        if(json.code === -1) reject(json.message);
+        else resolve(json);
+      }).catch(error => {
+        // 其它错误会在这里获捕
+        reject(error);
+      });
+  });
+ };
 
 })(window.FLY = window.fly || {});
